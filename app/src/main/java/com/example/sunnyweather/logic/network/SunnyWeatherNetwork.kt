@@ -11,6 +11,13 @@ import kotlin.coroutines.suspendCoroutine
 // 对所有网络请求的API进行封装
 
 object SunnyWeatherNetwork {
+    private val weatherService = RealtimeServiceCreator.create(WeatherService::class.java)
+    suspend fun getDailyWeather(id: String) =
+        weatherService.getDailyWeather(id).await()
+
+    suspend fun getRealtimeWeather(location: String) =
+        weatherService.getRealtimeWeather(location).await()
+
     private val placeService = ServiceCreator.create<PlaceService>()
     suspend fun searchPlaces(query: String) = placeService.searchPlaces(query).await()
     private suspend fun <T> Call<T>.await(): T {
@@ -20,8 +27,10 @@ object SunnyWeatherNetwork {
                     val body = response.body()
                     if (body != null) continuation.resume(body)
                     else continuation.resumeWithException(
-                        RuntimeException("response body is null"))
+                        RuntimeException("response body is null")
+                    )
                 }
+
                 override fun onFailure(call: Call<T>, t: Throwable) {
                     continuation.resumeWithException(t)
                 }
