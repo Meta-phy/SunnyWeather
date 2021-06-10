@@ -2,6 +2,7 @@ package com.example.sunnyweather.ui.place
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,11 +27,13 @@ class PlaceFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (activity is MainActivity && viewModel.isPlaceSaved()) {
+            Log.d("test-save", viewModel.getSavedPlace().toString())
             val place = viewModel.getSavedPlace()
             val intent = Intent(context, WeatherActivity::class.java).apply {
                 putExtra("location_lng", place.location.lng)
                 putExtra("location_lat", place.location.lat)
                 putExtra("place_name", place.name)
+                putExtra("location_id", place.id)
             }
             startActivity(intent)
             activity?.finish()
