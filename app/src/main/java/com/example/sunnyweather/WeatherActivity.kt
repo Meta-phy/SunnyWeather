@@ -47,8 +47,13 @@ class WeatherActivity : AppCompatActivity() {
                 Toast.makeText(this, "无法成功获取天气信息", Toast.LENGTH_SHORT).show()
                 result.exceptionOrNull()?.printStackTrace()
             }
+            swipeRefresh.isRefreshing = false
         })
-        viewModel.refreshWeather(viewModel.locationId,viewModel.locationLng, viewModel.locationLat)
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary)
+        refreshWeather()
+        swipeRefresh.setOnRefreshListener {
+            refreshWeather()
+        }
     }
     private fun showWeatherInfo(weather: Weather) {
         placeName.text = viewModel.placeName
@@ -76,7 +81,6 @@ class WeatherActivity : AppCompatActivity() {
             val skyIcon = view.findViewById(R.id.skyIcon) as ImageView
             val skyInfo = view.findViewById(R.id.skyInfo) as TextView
             val temperatureInfo = view.findViewById(R.id.temperatureInfo) as TextView
-            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             dateInfo.text = date
             val sky = getSky(skycon)
             skyIcon.setImageResource(sky.icon)
@@ -94,4 +98,10 @@ class WeatherActivity : AppCompatActivity() {
         carWashingText.text =  realtime.feelsLike + " ℃"
         weatherLayout.visibility = View.VISIBLE
     }
+    fun refreshWeather() {
+        viewModel.refreshWeather(viewModel.locationId,viewModel.locationLng, viewModel.locationLat)
+        swipeRefresh.isRefreshing = true
+    }
+
+
 }
