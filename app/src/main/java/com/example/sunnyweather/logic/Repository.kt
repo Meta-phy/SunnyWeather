@@ -1,7 +1,10 @@
 package com.example.sunnyweather.logic
 
+import android.content.ContentValues
 import android.util.Log
 import androidx.lifecycle.liveData
+import com.example.sunnyweather.MyDatabaseHelper
+import com.example.sunnyweather.SunnyWeatherApplication
 import com.example.sunnyweather.logic.dao.PlaceDao
 import com.example.sunnyweather.logic.model.Place
 import com.example.sunnyweather.logic.model.Weather
@@ -16,6 +19,20 @@ object Repository {
         val placeResponse = SunnyWeatherNetwork.searchPlaces(query)
         if (placeResponse.code == "200") {
             val places = placeResponse.location
+            //place加入数据库
+            val dbHelper = MyDatabaseHelper(SunnyWeatherApplication.context, "sunnyweather.db", 2)
+            dbHelper.writableDatabase//创建数据库
+            val db = dbHelper.writableDatabase
+            for (place in places){
+                val values = ContentValues().apply { // 开始组装place数据
+                    put("id", place.id)
+                    put("name", place.name)
+                    put("country", place.country)
+                    put("adm1", place.adm1)
+                    put("adm2", place.adm2)
+                }
+                db.insert("Place", null, values) // 插入数据
+            }
             Result.success(places)
         } else {
             Result.failure(RuntimeException("response status is ${placeResponse.code}"))
@@ -43,6 +60,18 @@ object Repository {
                     realtimeResponse.now,
                     dailyResponse.daily
                 )
+
+                //weather插入数据库
+                val dbHelper = MyDatabaseHelper(SunnyWeatherApplication.context, "sunnyweather.db", 2)
+                dbHelper.writableDatabase//创建数据库
+                val db = dbHelper.writableDatabase
+                val values = ContentValues().apply { // 开始组装place数据
+                    put("id",locationId)
+                    put("temp", realtimeResponse.now.temp)
+                    put("text", realtimeResponse.now.text)
+                }
+                db.insert("Weather", null, values) // 插入第一条数据
+
                 Result.success(weather)
             } else {
                 Result.failure(

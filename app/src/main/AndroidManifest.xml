@@ -13,10 +13,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SunnyWeather">
+        <provider
+            android:name=".WeatherContentProvider"
+            android:authorities="com.example.sunnyweather.provider"
+            android:enabled="true"
+            android:exported="true"></provider>
+
         <service
             android:name=".WeatherService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -25,7 +31,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".WeatherActivity"></activity>
+        <activity android:name=".WeatherActivity" />
     </application>
 
 </manifest>
